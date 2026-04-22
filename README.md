@@ -82,7 +82,7 @@ Contiene el analisis completo con explicaciones de cada decision tecnica.
 | XGBoost | Gradient boosting, mejor rendimiento en datos tabulares |
 
 **Metrica principal:** F1-Score  
-**Justificacion:** Con un desbalanceo del 26% de churn, la accuracy es enganosa. El F1 penaliza tanto falsos negativos (clientes que se van sin detectar) como falsos positivos (recursos desperdiciados). El AUC-ROC complementa midiendo la capacidad discriminativa general.
+**Justificacion:** Con un desbalanceo del 26% de churn, la accuracy no es apropiada. El F1 penaliza tanto falsos negativos (clientes que se van sin detectar) como falsos positivos (recursos desperdiciados). El AUC-ROC complementa midiendo la capacidad discriminativa general.
 
 ---
 
@@ -95,22 +95,6 @@ El modelo produce un score (0-1) por cliente, segmentado en tres niveles:
 | High | > 0.6 | Visita urgente — oferta de retencion personalizada |
 | Medium | 0.3 – 0.6 | Contacto proactivo — revision de contrato |
 | Low | < 0.3 | Mantenimiento — comunicacion periodica |
-
----
-
-## Planteamiento de los otros dos casos
-
-### Caso 2: Prediccion (Potencial Comercial)
-- **Variables clave:** `tenure`, `MonthlyCharges`, servicios contratados, tipo de contrato
-- **Modelo:** XGBoost Regressor con validacion cruzada k-fold
-- **Metricas:** MAE, RMSE, R²
-- **Negocio:** identificar clientes con bajo gasto actual y alto potencial para upsell
-
-### Caso 3: Deteccion de Anomalias
-- **Variables clave:** `charge_ratio`, variaciones en `MonthlyCharges`, patrones de uso
-- **Modelo:** Isolation Forest
-- **Metricas:** Precision@K, validacion manual de casos detectados
-- **Negocio:** detectar errores de facturacion, posible fraude o senales tempranas de fuga
 
 ---
 
