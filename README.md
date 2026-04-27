@@ -116,7 +116,30 @@ Con un desbalanceo del 26.5% (no extremo), la ponderacion de clases es suficient
 
 ## Limitaciones y mejoras futuras
 
+### Limitaciones actuales
+
 - El dataset es de telecomunicaciones. Aplicarlo a otros sectores requiere revalidar el feature engineering.
 - No se modelan efectos temporales ni estacionalidad del churn.
 - El scoring asume que la distribucion de clientes es estable. Se recomienda reentrenamiento periodico.
 - Como mejoras al tratamiento del desbalanceo: optimizacion del threshold de clasificacion, SMOTE, o calibracion de probabilidades (Platt scaling).
+
+### Que se haria con mas tiempo
+
+**Sobre los mismos datos:**
+
+- **Threshold tuning:** el umbral de clasificacion (0.5 por defecto) es arbitrario. Se buscaria el umbral optimo barriendo de 0.1 a 0.9 y seleccionando el que maximiza F1, o el que garantiza un Recall minimo del X% segun criterio de negocio.
+- **Optimizacion de hiperparametros:** usando Optuna (busqueda bayesiana) en lugar de grid search, especialmente para XGBoost y Random Forest. Es probable que XGBoost bien afinado supere a Random Forest.
+- **Calibracion de probabilidades:** aplicar Platt scaling o isotonic regression para asegurar que un score de 0.7 signifique realmente un 70% de probabilidad de churn, no solo "mas probable que 0.6". Importante para que el scoring sea interpretable por negocio.
+- **PR-AUC** como metrica adicional: el area bajo la curva Precision-Recall es mas informativa que ROC-AUC cuando el desbalanceo es relevante.
+
+**Con datos temporales:**
+
+- **Survival analysis** (Cox Proportional Hazards, Kaplan-Meier): en lugar de predecir si el cliente se va, predecir *cuando* se va. Permite planificar visitas con mayor anticipacion y priorizar clientes cuyo riesgo aumenta en las proximas semanas.
+- **Features de comportamiento temporal:** variacion de `MonthlyCharges` mes a mes, numero de incidencias de soporte recientes, tendencia de uso de servicios.
+- **Validacion temporal correcta:** en lugar de split aleatorio, usar los ultimos N meses como test para evitar data leakage temporal — el modelo no puede "ver el futuro" durante el entrenamiento.
+
+**Con datos de negocio adicionales:**
+
+- **Customer Lifetime Value (CLV)** como peso en la funcion de perdida: no todos los churners valen igual. Un cliente con alto CLV deberia tener mayor prioridad de retencion aunque su probabilidad de churn sea similar a la de otro de bajo valor.
+- **Calibracion del umbral por segmento:** segun la capacidad de visitas del equipo comercial y el coste de retencion por tipo de cliente, el umbral optimo puede variar entre segmentos.
+- **Experimentos A/B:** para medir el impacto real de las acciones de retencion y separar el efecto causal del modelo del simple comportamiento natural del cliente.
