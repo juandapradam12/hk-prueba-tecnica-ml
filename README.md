@@ -54,7 +54,7 @@ pip install -r requirements.txt
 ### 2. Ejecutar el pipeline completo
 
 ```bash
-python main.py
+python3.11 main.py
 ```
 
 Genera en `output/`:
